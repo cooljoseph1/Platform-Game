@@ -4,10 +4,10 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.LinkedList;
 
 import javax.swing.JPanel;
@@ -26,10 +26,18 @@ public class Game extends JPanel {
 
 	public LinkedList<GameObject> objects = new LinkedList<GameObject>();
 	public Player player;
+	public Goal goal;
 	public LinkedList<Platform> platforms = new LinkedList<Platform>();
 	public LinkedList<Enemy> enemies = new LinkedList<Enemy>();
+	public LinkedList<Lava> lavaFields = new LinkedList<Lava>();
 	public LinkedList<Coin> coins = new LinkedList<Coin>();
 	public Dimension screenPosition = new Dimension(0, 0);
+
+	private int lastLevel = new File("lib").list().length; // Set a default number of levels as the number of levels in
+															// the lib. Note that this will almost certainly include
+															// other items such as images, but we can ignore those.
+
+	private int currentLevel = 1;
 
 	private int score = 0;
 
@@ -51,48 +59,11 @@ public class Game extends JPanel {
 
 	}
 
-	public void loadLevel(String fileName) {
+	public void loadLevel(String file) {
 		BufferedReader reader = null;
-		objects = new LinkedList<GameObject>();
-		player = null;
-		platforms = new LinkedList<Platform>();
-		enemies = new LinkedList<Enemy>();
-		coins = new LinkedList<Coin>();
 		try {
-			reader = new BufferedReader(new FileReader(fileName));
-			String text = null;
-			while ((text = reader.readLine()) != null) {
-				String[] objectInfo = text.split(";");
-				switch (objectInfo[0]) {
-				case ("Coin"): {
-					Coin coin = new Coin(Float.parseFloat(objectInfo[1]), Float.parseFloat(objectInfo[2]));
-					coins.add(coin);
-					objects.add(coin);
-					break;
-				}
-				case ("Enemy"): {
-					Enemy enemy = new Enemy(Float.parseFloat(objectInfo[1]), Float.parseFloat(objectInfo[2]));
-					enemies.add(enemy);
-					objects.add(enemy);
-					break;
-				}
-				case ("Platform"): {
-					Platform platform = new Platform(Float.parseFloat(objectInfo[1]), Float.parseFloat(objectInfo[2]),
-							Float.parseFloat(objectInfo[3]), Float.parseFloat(objectInfo[4]));
-					platforms.add(platform);
-					objects.add(platform);
-					break;
-				}
-				case ("Player"): {
-					player = new Player(Float.parseFloat(objectInfo[1]), Float.parseFloat(objectInfo[2]));
-					objects.add(player);
-					break;
-				}
-				default:
-					break;
-				}
-
-			}
+			reader = new BufferedReader(new FileReader(file));
+			loadLevelHelper(reader);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -104,6 +75,84 @@ public class Game extends JPanel {
 				}
 			} catch (IOException e) {
 			}
+		}
+	}
+
+	public void loadLevel(File file) {
+		BufferedReader reader = null;
+		try {
+			reader = new BufferedReader(new FileReader(file));
+			loadLevelHelper(reader);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (reader != null) {
+					reader.close();
+				}
+			} catch (IOException e) {
+			}
+		}
+	}
+	
+	public void reset() {
+		objects = new LinkedList<GameObject>();
+		player = null;
+		goal=null;
+		lavaFields=new LinkedList<Lava>();
+		platforms = new LinkedList<Platform>();
+		enemies = new LinkedList<Enemy>();
+		coins = new LinkedList<Coin>();
+	}
+
+	public void loadLevelHelper(BufferedReader reader) throws IOException {
+		String text = null;
+		while ((text = reader.readLine()) != null) {
+			String[] objectInfo = text.split(";");
+			switch (objectInfo[0]) {
+			case ("Coin"): {
+				Coin coin = new Coin(Float.parseFloat(objectInfo[1]), Float.parseFloat(objectInfo[2]));
+				coins.add(coin);
+				objects.add(coin);
+				break;
+			}
+			case ("Enemy"): {
+				Enemy enemy = new Enemy(Float.parseFloat(objectInfo[1]), Float.parseFloat(objectInfo[2]));
+				enemies.add(enemy);
+				objects.add(enemy);
+				break;
+			}
+			case ("Platform"): {
+				Platform platform = new Platform(Float.parseFloat(objectInfo[1]), Float.parseFloat(objectInfo[2]),
+						Float.parseFloat(objectInfo[3]), Float.parseFloat(objectInfo[4]));
+				platforms.add(platform);
+				objects.add(platform);
+				break;
+			}
+			case ("Lava"): {
+				Lava lava = new Lava(Float.parseFloat(objectInfo[1]), Float.parseFloat(objectInfo[2]),
+						Float.parseFloat(objectInfo[3]), Float.parseFloat(objectInfo[4]));
+				lavaFields.add(lava);
+				objects.add(lava);
+				break;
+			}
+			case ("Player"): {
+				player = new Player(Float.parseFloat(objectInfo[1]), Float.parseFloat(objectInfo[2]));
+				objects.add(player);
+				break;
+			}
+			case ("Goal"): {
+				goal = new Goal(Float.parseFloat(objectInfo[1]), Float.parseFloat(objectInfo[2]),
+						Float.parseFloat(objectInfo[3]), Float.parseFloat(objectInfo[4]));
+				objects.add(goal);
+				break;
+			}
+			default:
+				break;
+			}
+
 		}
 	}
 
@@ -185,6 +234,17 @@ public class Game extends JPanel {
 	}
 
 	public void update() {
+
+		if (GameObject.intersectRect(player, goal)) {
+			File nextLevel = this.nextLevel();
+			if (nextLevel != null) {
+				this.loadLevel(nextLevel);
+			} else {
+				this.stopRunning();
+				return;
+			}
+		}
+
 		player.setInAir(true); // gets disabled if on a platform
 		enemies.forEach((enemy) -> enemy.setInAir(true)); // gets disabled if on a platform
 		LinkedList<Enemy> enemiesToRemove = new LinkedList<Enemy>();
@@ -205,12 +265,6 @@ public class Game extends JPanel {
 			}
 			// deal with enemy stuff about platforms
 			for (Enemy enemy : enemies) {
-				if (player.onEnemy(enemy)) {
-					enemiesToRemove.add(enemy);
-				} else if (GameObject.intersectRect(player, enemy)) {
-					this.stopRunning();
-					return;
-				}
 				if (enemy.onPlatform(platform)) {
 					enemy.setInAir(false);
 					enemy.setVelY((float) min(0, enemy.getVelY()));
@@ -231,12 +285,26 @@ public class Game extends JPanel {
 
 			}
 		}
-		
+		for (Enemy enemy : enemies) {
+			if (player.onEnemy(enemy)) {
+				enemiesToRemove.add(enemy);
+			} else if (GameObject.intersectRect(player, enemy)) {
+				this.stopRunning();
+				return;
+			}
+		}
+		for (Lava lava : lavaFields) {
+			if (GameObject.intersectRect(player, lava)) {
+				this.stopRunning();
+				return;
+			}
+		}
+
 		LinkedList<Coin> coinsToRemove = new LinkedList<Coin>();
-		for(Coin coin : coins) {
-			if(GameObject.intersectRect(coin, player)) {
+		for (Coin coin : coins) {
+			if (GameObject.intersectRect(coin, player)) {
 				coinsToRemove.add(coin);
-				score+=1;
+				score += 1;
 			}
 		}
 		coins.removeAll(coinsToRemove);
@@ -250,6 +318,33 @@ public class Game extends JPanel {
 
 	}
 
+	private File nextLevel() {
+		currentLevel += 1;
+
+		return getLevel();
+	}
+
+	private File getLevel() {
+
+		File nextFile = null;
+		boolean levelExists = false;
+		while (currentLevel <= lastLevel) {
+			nextFile = new File("lib", "Level" + currentLevel + ".txt");
+			levelExists = nextFile.exists();
+			if (levelExists) {
+				break;
+			} else {
+				currentLevel += 1;
+			}
+		}
+		// TODO Auto-generated method stub
+		if (levelExists) {
+			return nextFile;
+		} else {
+			return null;
+		}
+	}
+
 	private static float min(float a, float b) {
 		return a < b ? a : b;
 	}
@@ -259,8 +354,26 @@ public class Game extends JPanel {
 	}
 
 	public static void main(String args[]) {
+
 		Game game = new Game();
-		game.loadLevel("lib\\Level2.txt");
+
+		switch (args.length) {
+		case (0):
+			break;
+		case (1):
+			game.currentLevel = Integer.parseInt(args[0]);
+			break;
+		case (2):
+			game.currentLevel = Integer.parseInt(args[0]);
+			game.lastLevel = Integer.parseInt(args[1]);
+			break;
+		default:
+			game.currentLevel = Integer.parseInt(args[0]);
+			game.lastLevel = Integer.parseInt(args[1]);
+			break;
+		}
+		game.loadLevel(game.getLevel());
 		game.startRunning();
 	}
+
 }
