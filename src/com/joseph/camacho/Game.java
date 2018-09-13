@@ -96,12 +96,12 @@ public class Game extends JPanel {
 			}
 		}
 	}
-	
+
 	public void reset() {
 		objects = new LinkedList<GameObject>();
 		player = null;
-		goal=null;
-		lavaFields=new LinkedList<Lava>();
+		goal = null;
+		lavaFields = new LinkedList<Lava>();
 		platforms = new LinkedList<Platform>();
 		enemies = new LinkedList<Enemy>();
 		coins = new LinkedList<Coin>();
@@ -135,6 +135,7 @@ public class Game extends JPanel {
 				Lava lava = new Lava(Float.parseFloat(objectInfo[1]), Float.parseFloat(objectInfo[2]),
 						Float.parseFloat(objectInfo[3]), Float.parseFloat(objectInfo[4]));
 				lavaFields.add(lava);
+				platforms.add(lava); // Treat lava like a platform. You can walk on it, but it will kill you.
 				objects.add(lava);
 				break;
 			}
@@ -199,6 +200,7 @@ public class Game extends JPanel {
 
 	public void stopRunning() {
 		running = false;
+		this.paintImmediately(0, 0, WIDTH, HEIGHT);
 	}
 
 	public void startRunning() {
@@ -248,12 +250,15 @@ public class Game extends JPanel {
 		player.setInAir(true); // gets disabled if on a platform
 		enemies.forEach((enemy) -> enemy.setInAir(true)); // gets disabled if on a platform
 		LinkedList<Enemy> enemiesToRemove = new LinkedList<Enemy>();
+
+		LinkedList<Platform> platformsPlayerIsOn = new LinkedList<Platform>();
+
 		for (Platform platform : platforms) {
 			// deal with player stuff about platforms
+			if (platform instanceof Lava) {
+			}
 			if (player.onPlatform(platform)) {
-				player.setVelY((float) min(0, player.getVelY()));
-				player.setY(platform.y - player.height);
-				player.setInAir(false);
+				platformsPlayerIsOn.add(platform);
 			}
 			if (player.adjacentLeftTo(platform)) {
 				player.setVelX(min(0, player.getVelX()));
@@ -284,6 +289,16 @@ public class Game extends JPanel {
 				}
 
 			}
+		}
+		if (platformsPlayerIsOn.size() > 0) {
+
+			player.setVelY((float) min(0, player.getVelY()));
+
+			player.setInAir(false);
+			float minY = Float.MAX_VALUE;
+			for (Platform p : platformsPlayerIsOn)
+				minY = minY < p.getY() ? minY : p.getY();
+			player.setY(minY - player.getHeight());
 		}
 		for (Enemy enemy : enemies) {
 			if (player.onEnemy(enemy)) {

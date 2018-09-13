@@ -5,7 +5,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
 
-public class Lava extends GameObject {
+public class Lava extends Platform{
 
 	public Lava(float x, float y, float width, float height) {
 		super(x, y, width, height);

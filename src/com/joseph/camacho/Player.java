@@ -9,7 +9,8 @@ public class Player extends GameObject {
 
 	private boolean inAir = true;
 
-	private static final float MAX_VELY = 1000;
+	private static final float MAX_VELY = Float.MAX_VALUE;
+	private static final int DOWN_KEY_SENSITIVITY = 500;
 
 	private float velX = 0;
 	private float velY = 0;
@@ -54,6 +55,14 @@ public class Player extends GameObject {
 
 	public float getVelY() {
 		return velY;
+	}
+
+	public static float getMaxVelY() {
+		return MAX_VELY;
+	}
+
+	public static int getDownKeySensitivity() {
+		return DOWN_KEY_SENSITIVITY;
 	}
 
 	public void startMovingRight() {
@@ -149,11 +158,9 @@ public class Player extends GameObject {
 			velX = -speed;
 		}
 		velY += Game.gravity;
-		if (velY > MAX_VELY) {
-			velY = MAX_VELY;
+		if (velY > getMaxVelY()) {
+			velY = getMaxVelY();
 		}
-
-		// TODO Auto-generated method stub
 
 	}
 }
