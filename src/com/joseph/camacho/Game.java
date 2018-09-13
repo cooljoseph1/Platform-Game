@@ -61,6 +61,7 @@ public class Game extends JPanel {
 
 	public void loadLevel(String file) {
 		BufferedReader reader = null;
+		reset();
 		try {
 			reader = new BufferedReader(new FileReader(file));
 			loadLevelHelper(reader);
@@ -79,6 +80,7 @@ public class Game extends JPanel {
 	}
 
 	public void loadLevel(File file) {
+		reset();
 		BufferedReader reader = null;
 		try {
 			reader = new BufferedReader(new FileReader(file));
