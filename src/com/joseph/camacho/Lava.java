@@ -1,9 +1,8 @@
 package com.joseph.camacho;
 
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.Image;
+import java.awt.image.BufferedImage;
 
 public class Lava extends Platform{
 
@@ -11,7 +10,7 @@ public class Lava extends Platform{
 		super(x, y, width, height);
 	}
 
-	public Lava(float x, float y, float width, float height, Image img) {
+	public Lava(float x, float y, float width, float height, BufferedImage img) {
 		super(x, y, width, height, img);
 	}
 

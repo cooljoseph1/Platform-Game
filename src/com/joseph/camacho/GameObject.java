@@ -1,8 +1,8 @@
 package com.joseph.camacho;
 
-import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.image.BufferedImage;
 
 public abstract class GameObject {
 	protected float x;
@@ -10,7 +10,7 @@ public abstract class GameObject {
 	protected float width;
 	protected float height;
 
-	protected Image img;
+	protected BufferedImage img;
 
 	public GameObject(float x, float y, float width, float height) {
 		this.x = x;
@@ -20,7 +20,7 @@ public abstract class GameObject {
 
 	}
 	
-	public GameObject(float x, float y, float width, float height, Image img) {
+	public GameObject(float x, float y, float width, float height, BufferedImage img) {
 		this.x = x;
 		this.y = y;
 		this.width = width;
@@ -30,11 +30,11 @@ public abstract class GameObject {
 	}
 
 	
-	public Image getImage() {
+	public BufferedImage getImage() {
 		return img;
 	}
 
-	public void setImage(Image img) {
+	public void setImage(BufferedImage img) {
 		this.img = img;
 	}
 

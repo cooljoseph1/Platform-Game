@@ -1,9 +1,8 @@
 package com.joseph.camacho;
 
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.Image;
+import java.awt.image.BufferedImage;
 
 public class Enemy extends GameObject {
 	private static final float MAX_VELY = 1000;
@@ -27,11 +26,11 @@ public class Enemy extends GameObject {
 		super(x, y, width, height);
 	}
 
-	public Enemy(float x, float y, float width, float height, Image img) {
+	public Enemy(float x, float y, float width, float height, BufferedImage img) {
 		super(x, y, width, height, img);
 	}
 
-	public Enemy(float x, float y, Image img) {
+	public Enemy(float x, float y, BufferedImage img) {
 		super(x, y, 30f, 30f, img);
 	}
 

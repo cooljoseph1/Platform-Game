@@ -1,9 +1,8 @@
 package com.joseph.camacho;
 
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.Image;
+import java.awt.image.BufferedImage;
 
 public class Coin extends GameObject {
 
@@ -15,7 +14,7 @@ public class Coin extends GameObject {
 		super(x, y, width, height);
 	}
 
-	public Coin(float x, float y, float width, float height, Image img) {
+	public Coin(float x, float y, float width, float height, BufferedImage img) {
 		super(x, y, width, height, img);
 	}
 

@@ -1,9 +1,11 @@
 package com.joseph.camacho;
 
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.Image;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
+import java.awt.TexturePaint;
+import java.awt.image.BufferedImage;
 
 public class Player extends GameObject {
 
@@ -33,12 +35,12 @@ public class Player extends GameObject {
 		super(x, y, width, height);
 	}
 
-	public Player(float x, float y, float width, float height, Image img) {
+	public Player(float x, float y, float width, float height, BufferedImage img) {
 		super(x, y, width, height, img);
 	}
 
-	public Player(float x, float y, Image img) {
-		super(x, y, 30f, 50f, img);
+	public Player(float x, float y, BufferedImage img) {
+		super(x, y, img.getWidth(), img.getHeight(), img);
 	}
 
 	public void setVelX(float velX) {
@@ -142,9 +144,12 @@ public class Player extends GameObject {
 
 	@Override
 	public void render(Graphics g) {
-		g.setColor(Color.blue);
-		g.fillRect((int) x, (int) y, (int) width, (int) height);
-		// TODO Auto-generated method stub
+		if (img != null) {
+			g.drawImage(img, (int) x, (int) y, (int) width, (int) height, null);
+		} else {
+			g.setColor(Color.blue);
+			g.fillRect((int) x, (int) y, (int) width, (int) height);
+		}
 
 	}
 

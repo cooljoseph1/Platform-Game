@@ -3,6 +3,7 @@ package com.joseph.camacho;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -10,6 +11,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.LinkedList;
 
+import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
 public class Game extends JPanel {
@@ -18,6 +20,18 @@ public class Game extends JPanel {
 	public static double UPS;
 	public static double FPS;
 	public static final Dimension windowDimension = new Dimension(WIDTH, HEIGHT);
+
+	public static BufferedImage platformTile;
+	public static BufferedImage playerImage;
+	{
+
+		try {
+			platformTile = ImageIO.read(new File("lib\\PlatformTile.png"));
+			playerImage = ImageIO.read(new File("lib\\Person.png"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
 	public static float gravity = 20f;
 
@@ -42,6 +56,7 @@ public class Game extends JPanel {
 	private int score = 0;
 
 	public Game() {
+
 		// initialize window size.
 		// perhaps I should consider making it resizable later.
 		setPreferredSize(windowDimension);
@@ -128,7 +143,7 @@ public class Game extends JPanel {
 			}
 			case ("Platform"): {
 				Platform platform = new Platform(Float.parseFloat(objectInfo[1]), Float.parseFloat(objectInfo[2]),
-						Float.parseFloat(objectInfo[3]), Float.parseFloat(objectInfo[4]));
+						Float.parseFloat(objectInfo[3]), Float.parseFloat(objectInfo[4]), platformTile);
 				platforms.add(platform);
 				objects.add(platform);
 				break;
@@ -142,7 +157,7 @@ public class Game extends JPanel {
 				break;
 			}
 			case ("Player"): {
-				player = new Player(Float.parseFloat(objectInfo[1]), Float.parseFloat(objectInfo[2]));
+				player = new Player(Float.parseFloat(objectInfo[1]), Float.parseFloat(objectInfo[2]), playerImage);
 				objects.add(player);
 				break;
 			}
