@@ -25,15 +25,16 @@ public class Game extends JPanel {
 	public static BufferedImage lavaTile;
 	public static BufferedImage playerImage;
 	public static BufferedImage coinImage;
-
+	public static BufferedImage goalImage;
 	public static BufferedImage enemyImage;
 	{
 
 		try {
 			platformTile = ImageIO.read(new File("lib\\PlatformTile.png"));
-			lavaTile = ImageIO.read(new File("lib\\PlatformTile.png"));
+			lavaTile = ImageIO.read(new File("lib\\LavaTile2.png"));
 			playerImage = ImageIO.read(new File("lib\\Person.png"));
 			coinImage = ImageIO.read(new File("lib\\Coin.png"));
+			goalImage = ImageIO.read(new File("lib\\Goal.png"));
 			enemyImage = ImageIO.read(new File("lib\\Enemy.png"));
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -170,7 +171,7 @@ public class Game extends JPanel {
 			}
 			case ("Goal"): {
 				goal = new Goal(Float.parseFloat(objectInfo[1]), Float.parseFloat(objectInfo[2]),
-						Float.parseFloat(objectInfo[3]), Float.parseFloat(objectInfo[4]));
+						Float.parseFloat(objectInfo[3]), Float.parseFloat(objectInfo[4]),goalImage);
 				objects.add(goal);
 				break;
 			}
