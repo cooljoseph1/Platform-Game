@@ -23,17 +23,19 @@ public class Game extends JPanel {
 
 	public static BufferedImage platformTile;
 	public static BufferedImage playerImage;
+	public static BufferedImage coinImage;
 	{
 
 		try {
 			platformTile = ImageIO.read(new File("lib\\PlatformTile.png"));
 			playerImage = ImageIO.read(new File("lib\\Person.png"));
+			coinImage = ImageIO.read(new File("lib\\Coin.png"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
-	public static float gravity = 20f;
+	public static float gravity = 2400f;
 
 	private Window window;
 	private boolean running;
@@ -130,7 +132,7 @@ public class Game extends JPanel {
 			String[] objectInfo = text.split(";");
 			switch (objectInfo[0]) {
 			case ("Coin"): {
-				Coin coin = new Coin(Float.parseFloat(objectInfo[1]), Float.parseFloat(objectInfo[2]));
+				Coin coin = new Coin(Float.parseFloat(objectInfo[1]), Float.parseFloat(objectInfo[2]),coinImage);
 				coins.add(coin);
 				objects.add(coin);
 				break;
@@ -177,35 +179,43 @@ public class Game extends JPanel {
 	public void run() {
 		// A lot of this loop is taken from
 		// https://stackoverflow.com/questions/18283199/java-main-game-loop
-		long initialTime = System.nanoTime();
-		UPS = 120;
-		int ticks = 0;
+		UPS = 240;
 		FPS = 60;
 
-		double timeU = 1000000000 / UPS;
-		double timeF = 1000000000 / FPS;
+		long initialTime = System.nanoTime();
+		long endTime = initialTime;
 
-		long lastUpdate = initialTime;
+		double timeU = (1000000000 / UPS);
+		double timeF = (1000000000 / FPS);
 
 		double deltaU = 0;
 		double deltaF = 0;
 
 		// main game loop
 		while (running) {
-			long currentTime = System.nanoTime();
-			deltaU += (currentTime - initialTime) / timeU;
-			deltaF += (currentTime - initialTime) / timeF;
-			initialTime = currentTime;
 
-			if (deltaU >= 1) {
-				ticks += 1;
+			long timeDifference = (System.nanoTime() - initialTime);
+			initialTime = System.nanoTime();
+
+			deltaU += timeDifference;
+			deltaF += timeDifference;
+
+			if (deltaU >= timeU) {
 				update();
-				deltaU %= 1; // might want to change to deltaU--; in the future.
+				deltaU -= timeU;
+			}
+			if (deltaF >= timeF) {
+				this.paintImmediately(0, 0, WIDTH, HEIGHT);
+				deltaF -= timeF;
 			}
 
-			if (deltaF >= 1) {
-				this.paintImmediately(0, 0, WIDTH, HEIGHT);
-				deltaF %= 1; // might want to change to deltaF--; in the future.
+			endTime = System.nanoTime();
+			long timeToSleep = (long) (initialTime + timeU - endTime)/2;
+
+			try {
+				Thread.sleep(Math.max((timeToSleep / 1000000), 0), Math.max((int) timeToSleep % 1000000, 0));
+			} catch (InterruptedException e) {
+				e.printStackTrace();
 			}
 
 		}

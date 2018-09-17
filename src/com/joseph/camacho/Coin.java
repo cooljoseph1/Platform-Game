@@ -9,7 +9,11 @@ public class Coin extends GameObject {
 	public Coin(float x, float y) {
 		super(x, y, 20f, 20f);
 	}
-	
+
+	public Coin(float x, float y, BufferedImage img) {
+		super(x, y, img.getWidth(), img.getHeight(), img);
+	}
+
 	public Coin(float x, float y, float width, float height) {
 		super(x, y, width, height);
 	}
@@ -20,12 +24,14 @@ public class Coin extends GameObject {
 
 	@Override
 	public void render(Graphics g) {
-		g.setColor(Color.yellow);
-		g.fillOval((int)x, (int)y, (int)width, (int)height);
+		if (img != null) {
+			g.drawImage(img, (int) x, (int) y, (int) width, (int) height, null);
+		} else {
+			g.setColor(Color.yellow);
+			g.fillOval((int) x, (int) y, (int) width, (int) height);
+		}
 
 	}
-	
-	
 
 	@Override
 	public void tick() {

@@ -162,7 +162,7 @@ public class Player extends GameObject {
 		} else if (goingLeft) {
 			velX = -speed;
 		}
-		velY += Game.gravity;
+		velY += Game.gravity / Game.UPS;
 		if (velY > getMaxVelY()) {
 			velY = getMaxVelY();
 		}

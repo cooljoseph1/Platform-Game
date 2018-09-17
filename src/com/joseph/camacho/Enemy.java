@@ -118,7 +118,7 @@ public class Enemy extends GameObject {
 		x += velX / Game.UPS;
 		y += velY / Game.UPS;
 
-		velY += Game.gravity;
+		velY += Game.gravity / Game.UPS;
 		if (velY > MAX_VELY) {
 			velY = MAX_VELY;
 		}
