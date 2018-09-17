@@ -208,11 +208,11 @@ public class Game extends JPanel {
 
 			if (deltaU >= timeU) {
 				update();
-				deltaU -= timeU;
+				deltaU %= timeU;
 			}
 			if (deltaF >= timeF) {
 				this.paintImmediately(0, 0, WIDTH, HEIGHT);
-				deltaF -= timeF;
+				deltaF %= timeF;
 			}
 
 			endTime = System.nanoTime();

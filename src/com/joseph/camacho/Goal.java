@@ -20,9 +20,7 @@ public class Goal extends GameObject {
 	@Override
 	public void render(Graphics g) {
 		if (img != null) {
-			Graphics2D g2d = (Graphics2D) g;
-			g2d.setPaint(new TexturePaint(img, new Rectangle(0, 0, img.getWidth(), img.getHeight())));
-			g2d.fillRect((int) x, (int) y, (int) width, (int) height);
+			g.drawImage(img, (int) x, (int) y, (int) width, (int) height, null);
 		} else {
 			g.setColor(Color.blue);
 			g.fillRect((int) x, (int) y, (int) width, (int) height);
