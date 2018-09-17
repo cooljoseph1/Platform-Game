@@ -31,7 +31,7 @@ public class Enemy extends GameObject {
 	}
 
 	public Enemy(float x, float y, BufferedImage img) {
-		super(x, y, 30f, 30f, img);
+		super(x, y, img.getWidth(), img.getHeight(), img);
 	}
 
 	public void setVelX(float velX) {
@@ -75,7 +75,7 @@ public class Enemy extends GameObject {
 	}
 
 	public boolean onLeftEdgeOfPlatform(Platform platform) {
-		return (x + velX / Game.UPS < platform.getX() && x+width >= platform.getX());
+		return (x + velX / Game.UPS < platform.getX() && x + width >= platform.getX());
 	}
 
 	public boolean adjacentLeftTo(Platform platform) {
@@ -100,9 +100,12 @@ public class Enemy extends GameObject {
 
 	@Override
 	public void render(Graphics g) {
-		g.setColor(Color.red);
-		g.fillRect((int) x, (int) y, (int) width, (int) height);
-		// TODO Auto-generated method stub
+		if (img != null) {
+			g.drawImage(img, (int) x, (int) y, (int) width, (int) height, null);
+		} else {
+			g.setColor(Color.red);
+			g.fillRect((int) x, (int) y, (int) width, (int) height);
+		}
 
 	}
 

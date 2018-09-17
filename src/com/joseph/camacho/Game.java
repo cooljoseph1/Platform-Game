@@ -22,14 +22,19 @@ public class Game extends JPanel {
 	public static final Dimension windowDimension = new Dimension(WIDTH, HEIGHT);
 
 	public static BufferedImage platformTile;
+	public static BufferedImage lavaTile;
 	public static BufferedImage playerImage;
 	public static BufferedImage coinImage;
+
+	public static BufferedImage enemyImage;
 	{
 
 		try {
 			platformTile = ImageIO.read(new File("lib\\PlatformTile.png"));
+			lavaTile = ImageIO.read(new File("lib\\PlatformTile.png"));
 			playerImage = ImageIO.read(new File("lib\\Person.png"));
 			coinImage = ImageIO.read(new File("lib\\Coin.png"));
+			enemyImage = ImageIO.read(new File("lib\\Enemy.png"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -138,7 +143,7 @@ public class Game extends JPanel {
 				break;
 			}
 			case ("Enemy"): {
-				Enemy enemy = new Enemy(Float.parseFloat(objectInfo[1]), Float.parseFloat(objectInfo[2]));
+				Enemy enemy = new Enemy(Float.parseFloat(objectInfo[1]), Float.parseFloat(objectInfo[2]),enemyImage);
 				enemies.add(enemy);
 				objects.add(enemy);
 				break;
@@ -152,7 +157,7 @@ public class Game extends JPanel {
 			}
 			case ("Lava"): {
 				Lava lava = new Lava(Float.parseFloat(objectInfo[1]), Float.parseFloat(objectInfo[2]),
-						Float.parseFloat(objectInfo[3]), Float.parseFloat(objectInfo[4]));
+						Float.parseFloat(objectInfo[3]), Float.parseFloat(objectInfo[4]),lavaTile);
 				lavaFields.add(lava);
 				platforms.add(lava); // Treat lava like a platform. You can walk on it, but it will kill you.
 				objects.add(lava);
