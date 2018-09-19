@@ -3,8 +3,6 @@ package com.joseph.camacho;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Rectangle;
-import java.awt.TexturePaint;
 import java.awt.image.BufferedImage;
 
 public class Lava extends Platform {
@@ -21,7 +19,7 @@ public class Lava extends Platform {
 	public void render(Graphics g) {
 		if (img != null) {
 			Graphics2D g2d = (Graphics2D) g;
-			g2d.setPaint(new TexturePaint(img, new Rectangle(0, 0, img.getWidth(), img.getHeight())));
+			g2d.setPaint(texturePaint);
 			g2d.fillRect((int) x, (int) y, (int) width, (int) height);
 		} else {
 			g.setColor(Color.red);

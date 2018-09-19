@@ -17,7 +17,7 @@ public class KeyInput implements KeyListener {
 		switch (keyCode) {
 		case (KeyEvent.VK_UP):
 			if (!game.player.getInAir()) {
-				game.player.setVelY(-960f);
+				game.player.setVelY(-830f);
 			}
 			break;
 		case (KeyEvent.VK_DOWN):

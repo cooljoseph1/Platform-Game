@@ -127,6 +127,12 @@ public class Player extends GameObject {
 				|| y + height <= platform.getY());
 	}
 
+	public boolean adjacentBottomTo(Platform platform) {
+		// tests if player is below a platform.
+		return !(x >= platform.getRight() || y + velY / Game.UPS > platform.getBottom()
+				|| x + width <= platform.getX() || y < platform.getBottom());
+	}
+
 	public boolean getInAir() {
 		return inAir;
 	}

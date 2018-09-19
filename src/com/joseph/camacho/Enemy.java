@@ -12,12 +12,12 @@ public class Enemy extends GameObject {
 
 	private boolean goingRight = false;
 	// speed when going right/left in pixels per second
-	private float speed = 200;
+	private float speed = 100;
 	// Does the enemy fall off platforms?
 	private boolean fallOff = false;
 	// is the enemy currently falling?
 	private boolean inAir;
-
+	
 	public Enemy(float x, float y) {
 		super(x, y, 30f, 30f);
 	}
@@ -97,6 +97,17 @@ public class Enemy extends GameObject {
 	public void setInAir(boolean bool) {
 		inAir = bool;
 	}
+	
+	
+	@Override
+	public float getY() {
+		return y+10;
+	}
+	@Override
+	public float getWidth() {
+		return width-10;
+	}
+	
 
 	@Override
 	public void render(Graphics g) {

@@ -41,7 +41,7 @@ public class Game extends JPanel {
 		}
 	}
 
-	public static float gravity = 2400f;
+	public static float gravity = 1800f;
 
 	private Window window;
 	private boolean running;
@@ -135,16 +135,16 @@ public class Game extends JPanel {
 	public void loadLevelHelper(BufferedReader reader) throws IOException {
 		String text = null;
 		while ((text = reader.readLine()) != null) {
-			String[] objectInfo = text.split(";");
+			String[] objectInfo = text.split("[(),;]");
 			switch (objectInfo[0]) {
 			case ("Coin"): {
-				Coin coin = new Coin(Float.parseFloat(objectInfo[1]), Float.parseFloat(objectInfo[2]),coinImage);
+				Coin coin = new Coin(Float.parseFloat(objectInfo[1]), Float.parseFloat(objectInfo[2]), coinImage);
 				coins.add(coin);
 				objects.add(coin);
 				break;
 			}
 			case ("Enemy"): {
-				Enemy enemy = new Enemy(Float.parseFloat(objectInfo[1]), Float.parseFloat(objectInfo[2]),enemyImage);
+				Enemy enemy = new Enemy(Float.parseFloat(objectInfo[1]), Float.parseFloat(objectInfo[2]), enemyImage);
 				enemies.add(enemy);
 				objects.add(enemy);
 				break;
@@ -158,7 +158,7 @@ public class Game extends JPanel {
 			}
 			case ("Lava"): {
 				Lava lava = new Lava(Float.parseFloat(objectInfo[1]), Float.parseFloat(objectInfo[2]),
-						Float.parseFloat(objectInfo[3]), Float.parseFloat(objectInfo[4]),lavaTile);
+						Float.parseFloat(objectInfo[3]), Float.parseFloat(objectInfo[4]), lavaTile);
 				lavaFields.add(lava);
 				platforms.add(lava); // Treat lava like a platform. You can walk on it, but it will kill you.
 				objects.add(lava);
@@ -171,7 +171,7 @@ public class Game extends JPanel {
 			}
 			case ("Goal"): {
 				goal = new Goal(Float.parseFloat(objectInfo[1]), Float.parseFloat(objectInfo[2]),
-						Float.parseFloat(objectInfo[3]), Float.parseFloat(objectInfo[4]),goalImage);
+						Float.parseFloat(objectInfo[3]), Float.parseFloat(objectInfo[4]), goalImage);
 				objects.add(goal);
 				break;
 			}
@@ -185,7 +185,7 @@ public class Game extends JPanel {
 	public void run() {
 		// A lot of this loop is taken from
 		// https://stackoverflow.com/questions/18283199/java-main-game-loop
-		UPS = 240;
+		UPS = 500;
 		FPS = 60;
 
 		long initialTime = System.nanoTime();
@@ -216,7 +216,7 @@ public class Game extends JPanel {
 			}
 
 			endTime = System.nanoTime();
-			long timeToSleep = (long) (initialTime + timeU - endTime)/2;
+			long timeToSleep = (long) (initialTime + timeU - endTime) / 2;
 
 			try {
 				Thread.sleep(Math.max((timeToSleep / 1000000), 0), Math.max((int) timeToSleep % 1000000, 0));
@@ -288,9 +288,12 @@ public class Game extends JPanel {
 
 		for (Platform platform : platforms) {
 			// deal with player stuff about platforms
-			if (platform instanceof Lava) {
-			}
+			
 			if (player.onPlatform(platform)) {
+				if (platform instanceof Lava) {
+					this.stopRunning();
+					return;
+				}
 				platformsPlayerIsOn.add(platform);
 			}
 			if (player.adjacentLeftTo(platform)) {
@@ -300,6 +303,12 @@ public class Game extends JPanel {
 			if (player.adjacentRightTo(platform)) {
 				player.setVelX(max(0, player.getVelX()));
 				player.setX(platform.x + platform.width);
+			}
+			if(platform instanceof Lava) {
+				if(player.adjacentBottomTo(platform)) {
+					player.setVelY(0);
+					player.setY(platform.getBottom());
+				}
 			}
 			// deal with enemy stuff about platforms
 			for (Enemy enemy : enemies) {
@@ -336,13 +345,8 @@ public class Game extends JPanel {
 		for (Enemy enemy : enemies) {
 			if (player.onEnemy(enemy)) {
 				enemiesToRemove.add(enemy);
+				score += 10;
 			} else if (GameObject.intersectRect(player, enemy)) {
-				this.stopRunning();
-				return;
-			}
-		}
-		for (Lava lava : lavaFields) {
-			if (GameObject.intersectRect(player, lava)) {
 				this.stopRunning();
 				return;
 			}
